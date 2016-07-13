@@ -1,20 +1,33 @@
 {
   "name": "phaser",
-  "version": "1.0.0",
-  "description": "",
+  "version": "3.0.0",
+  "description": "Next generation ES6 Phaser",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/photonstorm/phaser.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "game",
+    "html5",
+    "webgl",
+    "canvas",
+    "es6",
+    "modules",
+    "physics",
+    "webaudio",
+    "retro"
+  ],
+  "author": "Richard Davey",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/photonstorm/phaser/issues"
   },
-  "homepage": "https://github.com/photonstorm/phaser#readme"
+  "homepage": "https://github.com/photonstorm/phaser#readme",
+  "devDependencies": {
+    "ava": "^0.15.2"
+  }
 }
