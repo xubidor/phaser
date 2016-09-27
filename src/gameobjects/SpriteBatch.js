@@ -24,8 +24,6 @@ Phaser.SpriteBatch = function (game, parent, name, addToStage) {
 
     if (parent === undefined || parent === null) { parent = game.world; }
 
-    PIXI.SpriteBatch.call(this);
-
     Phaser.Group.call(this, game, parent, name, addToStage);
 
     /**
@@ -34,8 +32,183 @@ Phaser.SpriteBatch = function (game, parent, name, addToStage) {
     */
     this.type = Phaser.SPRITEBATCH;
 
+    /**
+    * @property {Object} fastSpriteBatch - WebGL Batch Shader.
+    * @private
+    */
+    this.fastSpriteBatch = null;
+
+    /**
+    * @property {boolean} ready - Internal flag.
+    * @private
+    */
+    this.ready = false;
+
 };
 
-Phaser.SpriteBatch.prototype = Phaser.Utils.extend(true, Phaser.SpriteBatch.prototype, PIXI.SpriteBatch.prototype, Phaser.Group.prototype);
+Phaser.SpriteBatch.prototype = Phaser.Utils.extend(true, Phaser.SpriteBatch.prototype, Phaser.Group.prototype);
 
 Phaser.SpriteBatch.prototype.constructor = Phaser.SpriteBatch;
+
+/**
+* Creates the Fast Sprite Batch shader, and flags this as ready.
+*
+* @private
+* @method
+* @memberof Phaser.SpriteBatch
+* @param {Object} gl - WebGL Context
+*/
+Phaser.SpriteBatch.prototype.initWebGL = function (gl) {
+
+    this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
+
+    this.ready = true;
+
+};
+
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
+Phaser.SpriteBatch.prototype.updateTransform = function () {
+
+    this.displayObjectUpdateTransform();
+
+};
+
+/**
+* Renders the Sprite Batch using the WebGL renderer.
+*
+* @private
+* @method
+* @memberof Phaser.SpriteBatch
+* @param {RenderSession} renderSession
+*/
+Phaser.SpriteBatch.prototype._renderWebGL = function (renderSession) {
+
+    if (!this.visible || this.alpha <= 0 || !this.children.length)
+    {
+        return;
+    }
+
+    if (!this.ready)
+    {
+        this.initWebGL(renderSession.gl);
+    }
+    
+    if (this.fastSpriteBatch.gl !== renderSession.gl)
+    {
+        this.fastSpriteBatch.setContext(renderSession.gl);
+    }
+
+    renderSession.spriteBatch.stop();
+    
+    renderSession.shaderManager.setShader(renderSession.shaderManager.fastShader);
+    
+    this.fastSpriteBatch.begin(this, renderSession);
+    this.fastSpriteBatch.render(this);
+
+    renderSession.spriteBatch.start();
+ 
+};
+
+/**
+* Renders the Sprite Batch using the Canvas renderer.
+*
+* @private
+* @method
+* @memberof Phaser.SpriteBatch
+* @param {RenderSession} renderSession
+*/
+Phaser.SpriteBatch.prototype._renderCanvas = function (renderSession) {
+
+    if (!this.visible || this.alpha <= 0 || !this.children.length)
+    {
+        return;
+    }
+    
+    var context = renderSession.context;
+
+    context.globalAlpha = this.worldAlpha;
+
+    this.displayObjectUpdateTransform();
+
+    var transform = this.worldTransform;
+       
+    var isRotated = true;
+
+    for (var i = 0; i < this.children.length; i++)
+    {
+        var child = this.children[i];
+
+        if (!child.visible)
+        {
+            continue;
+        }
+
+        var texture = child.texture;
+        var frame = texture.frame;
+
+        context.globalAlpha = this.worldAlpha * child.alpha;
+
+        if (child.rotation % (Math.PI * 2) === 0)
+        {
+            //  If rotation === 0 we can avoid setTransform
+
+            if (isRotated)
+            {
+                context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+                isRotated = false;
+            }
+
+            context.drawImage(
+                texture.baseTexture.source,
+                frame.x,
+                frame.y,
+                frame.width,
+                frame.height,
+                ((child.anchor.x) * (-frame.width * child.scale.x) + child.position.x + 0.5 + renderSession.shakeX) | 0,
+                ((child.anchor.y) * (-frame.height * child.scale.y) + child.position.y + 0.5 + renderSession.shakeY) | 0,
+                frame.width * child.scale.x,
+                frame.height * child.scale.y);
+        }
+        else
+        {
+            if (!isRotated)
+            {
+                isRotated = true;
+            }
+    
+            child.displayObjectUpdateTransform();
+           
+            var childTransform = child.worldTransform;
+            var tx = (childTransform.tx * renderSession.resolution) + renderSession.shakeX;
+            var ty = (childTransform.ty * renderSession.resolution) + renderSession.shakeY;
+
+            // allow for trimming
+           
+            if (renderSession.roundPixels)
+            {
+                context.setTransform(childTransform.a, childTransform.b, childTransform.c, childTransform.d, tx | 0, ty | 0);
+            }
+            else
+            {
+                context.setTransform(childTransform.a, childTransform.b, childTransform.c, childTransform.d, tx, ty);
+            }
+
+            context.drawImage(
+                texture.baseTexture.source,
+                frame.x,
+                frame.y,
+                frame.width,
+                frame.height,
+                ((child.anchor.x) * (-frame.width) + 0.5) | 0,
+                ((child.anchor.y) * (-frame.height) + 0.5) | 0,
+                frame.width,
+                frame.height);
+        }
+    }
+
+};
