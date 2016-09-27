@@ -40,6 +40,8 @@ PIXI.SpriteBatch.prototype.constructor = PIXI.SpriteBatch;
  */
 PIXI.SpriteBatch.prototype.initWebGL = function(gl)
 {
+    console.log('pixi initWebGL');
+
     // TODO only one needed for the whole engine really?
     this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
 
@@ -66,12 +68,13 @@ PIXI.SpriteBatch.prototype.updateTransform = function()
 * @param renderSession {RenderSession} 
 * @private
 */
-PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
+PIXI.SpriteBatch.prototype._XXXrenderWebGL = function(renderSession)
 {
     if (!this.visible || this.alpha <= 0 || !this.children.length) return;
 
     if (!this.ready)
     {
+        console.log('pixi render webgl once');
         this.initWebGL(renderSession.gl);
     }
     
@@ -98,7 +101,7 @@ PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
 * @param renderSession {RenderSession} 
 * @private
 */
-PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
+PIXI.SpriteBatch.prototype._XXXrenderCanvas = function(renderSession)
 {
     if (!this.visible || this.alpha <= 0 || !this.children.length) return;
     

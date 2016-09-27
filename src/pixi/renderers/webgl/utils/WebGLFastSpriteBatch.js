@@ -181,8 +181,12 @@ PIXI.WebGLFastSpriteBatch.prototype.end = function()
  */
 PIXI.WebGLFastSpriteBatch.prototype.render = function (spriteBatch)
 {
+    console.log('render');
+
     var children = spriteBatch.children;
     var sprite = children[0];
+
+    console.log(sprite);
 
     // if the uvs have not updated then no point rendering just yet!
     
@@ -215,6 +219,9 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     var texture = sprite.texture;
     var baseTexture = texture.baseTexture;
     var gl = this.gl;
+
+    console.dir(this.textureArray);
+    console.log('renderSprite', baseTexture);
     
     if (this.textureArray[baseTexture.textureIndex] != baseTexture) {
         gl.activeTexture(gl.TEXTURE0 + baseTexture.textureIndex);
@@ -222,6 +229,9 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
         this.textureArray[baseTexture.textureIndex] = baseTexture;
         this.flush();
     }
+
+    debugger;
+
     //sprite = children[i];
     if(!sprite.visible)return;
     

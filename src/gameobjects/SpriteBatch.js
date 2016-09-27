@@ -46,37 +46,13 @@ Phaser.SpriteBatch = function (game, parent, name, addToStage) {
 
 };
 
-Phaser.SpriteBatch.prototype = Phaser.Utils.extend(true, Phaser.SpriteBatch.prototype, Phaser.Group.prototype);
+Phaser.SpriteBatch.prototype = Phaser.Utils.extend(true, Phaser.SpriteBatch.prototype, PIXI.SpriteBatch.prototype, Phaser.Group.prototype);
+
+// Phaser.SpriteBatch.prototype = Phaser.Utils.extend(true, Phaser.SpriteBatch.prototype, Phaser.Group.prototype);
+
+// Phaser.SpriteBatch.prototype = Object.create(Phaser.Group.prototype);
 
 Phaser.SpriteBatch.prototype.constructor = Phaser.SpriteBatch;
-
-/**
-* Creates the Fast Sprite Batch shader, and flags this as ready.
-*
-* @private
-* @method
-* @memberof Phaser.SpriteBatch
-* @param {Object} gl - WebGL Context
-*/
-Phaser.SpriteBatch.prototype.initWebGL = function (gl) {
-
-    this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
-
-    this.ready = true;
-
-};
-
-/*
- * Updates the object transform for rendering
- *
- * @method updateTransform
- * @private
- */
-Phaser.SpriteBatch.prototype.updateTransform = function () {
-
-    this.displayObjectUpdateTransform();
-
-};
 
 /**
 * Renders the Sprite Batch using the WebGL renderer.
@@ -86,7 +62,7 @@ Phaser.SpriteBatch.prototype.updateTransform = function () {
 * @memberof Phaser.SpriteBatch
 * @param {RenderSession} renderSession
 */
-Phaser.SpriteBatch.prototype._renderWebGL = function (renderSession) {
+Phaser.SpriteBatch.prototype._renderWebGL_ = function (renderSession) {
 
     if (!this.visible || this.alpha <= 0 || !this.children.length)
     {
@@ -95,7 +71,9 @@ Phaser.SpriteBatch.prototype._renderWebGL = function (renderSession) {
 
     if (!this.ready)
     {
-        this.initWebGL(renderSession.gl);
+        this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(renderSession.gl);
+
+        this.ready = true;
     }
     
     if (this.fastSpriteBatch.gl !== renderSession.gl)
