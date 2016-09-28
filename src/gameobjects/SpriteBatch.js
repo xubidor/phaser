@@ -46,11 +46,7 @@ Phaser.SpriteBatch = function (game, parent, name, addToStage) {
 
 };
 
-Phaser.SpriteBatch.prototype = Phaser.Utils.extend(true, Phaser.SpriteBatch.prototype, PIXI.SpriteBatch.prototype, Phaser.Group.prototype);
-
-// Phaser.SpriteBatch.prototype = Phaser.Utils.extend(true, Phaser.SpriteBatch.prototype, Phaser.Group.prototype);
-
-// Phaser.SpriteBatch.prototype = Object.create(Phaser.Group.prototype);
+Phaser.SpriteBatch.prototype = Object.create(Phaser.Group.prototype);
 
 Phaser.SpriteBatch.prototype.constructor = Phaser.SpriteBatch;
 
@@ -62,7 +58,7 @@ Phaser.SpriteBatch.prototype.constructor = Phaser.SpriteBatch;
 * @memberof Phaser.SpriteBatch
 * @param {RenderSession} renderSession
 */
-Phaser.SpriteBatch.prototype._renderWebGL_ = function (renderSession) {
+Phaser.SpriteBatch.prototype._renderWebGL = function (renderSession) {
 
     if (!this.visible || this.alpha <= 0 || !this.children.length)
     {
