@@ -40,7 +40,7 @@ Grab the source and join in the fun!
 
 > 26th August 2016
 
-Summer is nearly over, the nights are drawing in, and the Phaser releases continue. After enjoying a short break in August, we're back with Phaser 2.6.2. This is mostly a maintenance release, with a lot of attention paid to clearing bugs, and improving features. There's also some significant updates to our fork of Pixi, setting the scene for the next iteration of Phaser.
+Summer is nearly over, the nights are drawing in, and the Phaser releases continue. After enjoying a short break in August, we're back with Phaser 2.6.2. This is mostly a maintenance release, with a lot of attention paid to clearing bugs, and improving features. There are also some significant updates to our fork of Pixi, setting the scene for the next iteration of Phaser.
 
 Check the [Change Log](#change-log) for the complete list of what's new and updated.
 
