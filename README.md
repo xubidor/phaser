@@ -38,7 +38,7 @@ Grab the source and join in the fun!
 
 <div align="center"><img src="http://phaser.io/images/github/news.jpg"></div>
 
-> In Development
+> In Developmentasdf
 
 This is the development branch, where we are building Phaser 3.0.0
 
